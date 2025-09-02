@@ -623,7 +623,7 @@ class BulkDock:
             submitter_institution=submitter_institution,
             submitter_email=submitter_email,
             generate_pdbs=generate_pdbs,
-            name_col="id",
+            # name_col="id",
             metadata=metadata,
             tags=tags,
             subsites=subsites,
