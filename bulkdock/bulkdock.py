@@ -318,6 +318,8 @@ class BulkDock:
             "combine",
             target,
             infile,
+            "--batch-size",
+            str(batch_size),
         ]
 
         x = subprocess.run(
