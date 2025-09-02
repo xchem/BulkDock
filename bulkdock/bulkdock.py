@@ -568,7 +568,13 @@ class BulkDock:
                 pose_ids = set()
                 for pose in mrich.track(poses, prefix=filter_method):
                     func = getattr(pose, filter_method)
-                    passed = func(debug=debug)
+                    try:
+                        passed = func(debug=debug)
+                    except Exception as e:
+                        mrich.error(filter_method, "filter failed")
+                        mrich.error(e)
+                        continue
+
                     if not passed:
                         if debug:
                             mrich.debug(
