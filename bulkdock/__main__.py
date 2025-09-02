@@ -40,6 +40,7 @@ def export(
     require_outcome: str | None = "acceptable",
     posebusters: bool = True,
     output: str | None = None,
+    debug: bool = False,
 ):
     """Export poses from a successful output into a Fragalysis-ready format"""
 
@@ -64,6 +65,7 @@ def export(
         metadata=metadata,
         tags=tags,
         subsites=subsites,
+        debug=debug,
     )
 
 
