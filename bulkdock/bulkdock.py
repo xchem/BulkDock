@@ -638,6 +638,8 @@ class BulkDock:
     def requeue_placement_job(self, job_id: int):
 
         """Requeue a job by given ID"""
+        
+        import subprocess
 
         with open("sbatch.log", "rt") as f:
             searching = True
@@ -647,15 +649,34 @@ class BulkDock:
                         searching = False
                         continue
                 else:
-                    command_str = line
+                    command_str = line.strip()
                     break
 
             else:
                 mrich.error("Did not find submission command for", job_id)
                 return
 
-        print(command_str)
+        commands = command_str.split(" ")
 
+        x = subprocess.run(
+            commands, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+
+        if x.returncode != 0:
+            mrich.print(x.stdout)
+            mrich.print(x.stderr)
+            raise Exception(
+                f"Could not submit slurm job with command: {command_str}"
+            )
+
+        job_id = int(x.stdout.decode().strip().split()[-1])
+
+        with open("sbatch.log", "ta") as file:
+            file.write(f"# {job_id}\n")
+            file.write(command_str)
+            file.write("\n")
+
+        mrich.success(x.stdout)
 
     ### CONFIG
 
