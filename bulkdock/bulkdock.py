@@ -319,7 +319,7 @@ class BulkDock:
             target,
             infile,
             "--batch-size",
-            str(batch_size),
+            str(split),
         ]
 
         x = subprocess.run(
