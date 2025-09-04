@@ -55,6 +55,7 @@ def parse_input_csv(
     """
 
     from pandas import read_csv
+    from hippo.tools import inchikey_from_smiles
 
     # read dataframe from CSV
     df = read_csv(file)
@@ -63,11 +64,6 @@ def parse_input_csv(
     
     mrich.var("len(df)", len(df))
 
-    mrich.h1("Compound Registration")
-    values = animal.register_compounds(smiles=df["smiles"].values)
-
-    inchikeys = [inchikey for inchikey, smiles in values]
-
     hits = animal.poses(tag="hits")
     mrich.var("hits", len(hits), unit="Poses")
 
@@ -75,23 +71,17 @@ def parse_input_csv(
     alias_lookup = animal.db.get_pose_alias_id_dict(hits)
     mrich.debug("get_pose_id_obj_dict()")
     pose_lookup = animal.db.get_pose_id_obj_dict(hits)
-    mrich.debug("get_compound_inchikey_id_dict()")
-    inchikey_lookup = animal.db.get_compound_inchikey_id_dict(inchikeys)
-    mrich.debug("get_compound_id_obj_dict()")
-    compound_lookup = animal.db.get_compound_id_obj_dict(animal.compounds[list(inchikey_lookup.values())])
 
     mrich.h1("Enumerate placement tasks")
     
     data = []
 
-    for (i, row), inchikey in zip(df.iterrows(), inchikeys):
+    for i, row in df.iterrows():
 
         # extract row values
         smiles = row.smiles
+        inchikey = inchikey_from_smiles(smiles)
         inspirations = row.values[1:]
-
-        compound_id = inchikey_lookup[inchikey]
-        compound = compound_lookup[compound_id]
 
         # debug output
         if debug:
@@ -121,7 +111,8 @@ def parse_input_csv(
                 # all info needed for placement
                 data.append(
                     dict(
-                        compound=compound,
+                        smiles=smiles,
+                        inchikey=inchikey,
                         reference=pose,
                         inspirations=inspiration_poses,
                     )
@@ -132,7 +123,6 @@ def parse_input_csv(
                     mrich.h3("Placement")
                     mrich.var("smiles", smiles)
                     mrich.var("inchikey", inchikey)
-                    mrich.var("compound", compound)
                     mrich.var("protein", pose.alias)
                     mrich.var("inspirations", [p.alias for p in inspiration_poses])
 
@@ -143,7 +133,8 @@ def parse_input_csv(
             # all info needed for placement
             data.append(
                 dict(
-                    compound=compound,
+                    smiles=smiles,
+                    inchikey=inchikey,
                     reference=reference_pose,
                     inspirations=inspiration_poses,
                 )
@@ -154,7 +145,6 @@ def parse_input_csv(
                 mrich.h3("Placement")
                 mrich.var("smiles", smiles)
                 mrich.var("inchikey", inchikey)
-                mrich.var("compound", compound)
                 mrich.var("protein", pose.alias)
                 mrich.var("inspirations", [p.alias for p in inspiration_poses])
 

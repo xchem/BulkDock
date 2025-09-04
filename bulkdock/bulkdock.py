@@ -367,6 +367,7 @@ class BulkDock:
         if debug:
             mrich.debug("parse_input_csv")
 
+        # registers compounds and generates placement task dictionaries
         data = parse_input_csv(
             animal=animal,
             file=csv_path,
@@ -415,11 +416,13 @@ class BulkDock:
 
             mrich.h2(f"Placement task {i+1}/{len(data)}")
 
-            compound = d["compound"]
+            smiles = d["smiles"]
+            inchikey = d["inchikey"]
             reference = d["reference"]
             inspirations = d["inspirations"]
 
-            mrich.var("compound", compound)
+            mrich.var("smiles", smiles)
+            mrich.var("inchikey", inchikey)
             mrich.var("reference", reference)
             mrich.var("inspirations", [p.alias for p in inspirations])
 
@@ -429,13 +432,7 @@ class BulkDock:
                 csv_name=csv_path.name,
             )
 
-            # create_inspiration_sdf: bool = False
-            # # create ref hits file (Not working with inspirations: list[Pose])
-            # if create_inspiration_sdf:
-            #     ref_hits_path = self.create_inspiration_sdf(target, inspirations)
-            #     mrich.var("ref_hits_path", ref_hits_path)
-
-            # create protein file
+            # get protein file path
             protein_path = reference.path.replace("_hippo.pdb", ".pdb").replace(
                 ".pdb", "_apo-desolv.pdb"
             )
@@ -444,7 +441,8 @@ class BulkDock:
             result = fragmenstein_place(
                 animal=animal,
                 scratch_dir=job_scratch_dir,
-                compound=compound,
+                smiles=smiles,
+                inchikey=inchikey,
                 reference=reference,
                 inspirations=inspirations,
                 protein_path=protein_path,

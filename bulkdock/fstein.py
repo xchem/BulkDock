@@ -17,7 +17,8 @@ def fragmenstein_place(
     *,
     animal: "HIPPO",
     scratch_dir: "Path",
-    compound: "Compound",
+    smiles: str,
+    inchikey: str,
     reference: "Pose",
     inspirations: "list[Pose]",
     protein_path: "Path",
@@ -38,8 +39,10 @@ def fragmenstein_place(
 
     # create inputs
     queries = create_fragmenstein_queries_df(
-        compound=compound, reference=reference, inspirations=inspirations
+        smiles=smiles, inchikey=inchikey, reference=reference, inspirations=inspirations
     )
+
+    orig_smiles = smiles
 
     # validate inputs
     queries = place_input_validator(queries)
@@ -50,6 +53,7 @@ def fragmenstein_place(
 
     mrich.h3("Fragmenstein info")
     mrich.var("name", name)
+    mrich.var("orig_smiles", orig_smiles)
     mrich.var("smiles", smiles)
     mrich.var("scratch_dir", scratch_dir)
     mrich.var("subdir", subdir)
@@ -94,7 +98,7 @@ def fragmenstein_place(
 
         break
 
-    ## into HIPPO database
+    ## Write data into SDF
 
     mol_path = subdir / f"{name}.minimised.mol"
 
@@ -109,7 +113,9 @@ def fragmenstein_place(
         mol = Chem.Mol(mol_bytes)
 
         mol.SetProp("_Name", name)
-        mol.SetProp("compound_id", str(compound.id))
+        mol.SetProp("smiles", smiles)
+        mol.SetProp("orig_smiles", orig_smiles)
+        mol.SetProp("inchikey", inchikey)
         mol.SetProp("target_id", str(1))
         mol.SetProp("reference_id", str(reference.id))
         mol.SetProp("inspiration_ids", str([p.id for p in inspirations]))
@@ -171,14 +177,14 @@ def setup_wictor_laboratory(
 
 
 def create_fragmenstein_queries_df(
-    *, compound: "Compound", reference: "Pose", inspirations: "list[Pose]"
+    *, smiles: str, inchikey: str, reference: "Pose", inspirations: "list[Pose]"
 ):
 
     return DataFrame(
         [
             {
-                "name": f"{compound}-{reference}",
-                "smiles": compound.smiles,
+                "name": f"{inchikey}-{reference}",
+                "smiles": smiles,
                 "hits": [pose.mol for pose in inspirations],
             }
         ]
