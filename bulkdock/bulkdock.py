@@ -635,6 +635,28 @@ class BulkDock:
         else:
             mrich.success(f"Created Fragalysis-compatible SDF")
 
+    def requeue(self, job_id: int):
+
+        """Requeue a job by given ID"""
+
+        with open("sbatch.log", "rt") as f:
+            searching = True
+            for line in f:
+                if searching:
+                    if line.startswith(f"# {job_id}"):
+                        searching = False
+                        continue
+                else:
+                    command_str = line
+                    break
+
+            else:
+                mrich.error("Did not find submission command for", job_id)
+                return
+
+        print(command_str)
+
+
     ### CONFIG
 
     def load_config(self):

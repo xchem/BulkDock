@@ -118,6 +118,13 @@ def configure(
     assert variable in VARIABLES
     engine.set_config_value(variable, value)
 
+@app.command()
+def requeue(
+    job_id: int,
+):
+    """Requeue a bulkdock placement job with given ID"""
+
+    engine.requeue_placement_job(job_id=job_id)
 
 @app.command()
 def create_directories():
