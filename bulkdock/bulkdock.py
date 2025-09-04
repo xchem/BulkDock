@@ -669,14 +669,16 @@ class BulkDock:
                 f"Could not submit slurm job with command: {command_str}"
             )
 
-        job_id = int(x.stdout.decode().strip().split()[-1])
+        stdout = x.stdout.decode().strip()
+
+        job_id = int(stdout.split()[-1])
 
         with open("sbatch.log", "ta") as file:
             file.write(f"# {job_id}\n")
             file.write(command_str)
             file.write("\n")
 
-        mrich.success(x.stdout)
+        mrich.success(stdout)
 
     ### CONFIG
 
