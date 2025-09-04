@@ -635,7 +635,7 @@ class BulkDock:
         else:
             mrich.success(f"Created Fragalysis-compatible SDF")
 
-    def requeue(self, job_id: int):
+    def requeue_placement_job(self, job_id: int):
 
         """Requeue a job by given ID"""
 
