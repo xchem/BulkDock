@@ -132,18 +132,20 @@ def fragmenstein_place(
         writer.write(mol)
 
         mrich.success(f"Wrote data to SDF")
-        cleanup(subdir)
+        if cleanup:
+            cleanup_subdir(subdir)
 
         return True
 
     else:
 
         mrich.error("Placement not successful")
-        cleanup(subdir)
+        if cleanup:
+            cleanup_subdir(subdir)
 
         return False
 
-def cleanup(subdir):
+def cleanup_subdir(subdir):
     if subdir.exists() and subdir.is_dir():
         for item in subdir.glob("*"):
             if item.is_file():
