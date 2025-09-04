@@ -121,10 +121,14 @@ def configure(
 @app.command()
 def requeue(
     job_id: list[int],
+    stagger: float = 0,
 ):
     """Requeue a bulkdock placement job with given ID(s)"""
 
     for i in job_id:
+        if stagger and i > 0:
+            with mrich.clock("Staggering job submission..."):
+                time.sleep(stagger)
         engine.requeue_placement_job(job_id=i)
 
 @app.command()
