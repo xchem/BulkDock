@@ -28,6 +28,7 @@ def fragmenstein_place(
     timeout: int = 300,
     write_hit_mols: bool = True,
     metadata: dict | None = None,
+    cleanup: bool = True,
 ) -> "Pose | bool":
 
     metadata = metadata or {}
@@ -131,15 +132,24 @@ def fragmenstein_place(
         writer.write(mol)
 
         mrich.success(f"Wrote data to SDF")
+        cleanup(subdir)
 
         return True
 
     else:
 
         mrich.error("Placement not successful")
+        cleanup(subdir)
 
         return False
 
+def cleanup(subdir):
+    if subdir.exists() and subdir.is_dir():
+        for item in subdir.glob("*"):
+            if item.is_file():
+                item.unlink()
+        subdir.rmdir()
+        mrich.debug(f"{subdir} has been deleted")
 
 # from syndirella.slipper.SlipperFitter.setup_Fragmenstein
 def setup_wictor_laboratory(
