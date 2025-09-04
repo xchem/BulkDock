@@ -658,27 +658,29 @@ class BulkDock:
 
         commands = command_str.split(" ")
 
-        x = subprocess.run(
-            commands, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        print(commands)
 
-        if x.returncode != 0:
-            mrich.print(x.stdout)
-            mrich.print(x.stderr)
-            raise Exception(
-                f"Could not submit slurm job with command: {command_str}"
-            )
+        # x = subprocess.run(
+        #     commands, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        # )
 
-        stdout = x.stdout.decode().strip()
+        # if x.returncode != 0:
+        #     mrich.print(x.stdout)
+        #     mrich.print(x.stderr)
+        #     raise Exception(
+        #         f"Could not submit slurm job with command: {command_str}"
+        #     )
 
-        job_id = int(stdout.split()[-1])
+        # stdout = x.stdout.decode().strip()
 
-        with open("sbatch.log", "ta") as file:
-            file.write(f"# {job_id}\n")
-            file.write(command_str)
-            file.write("\n")
+        # job_id = int(stdout.split()[-1])
 
-        mrich.success(stdout)
+        # with open("sbatch.log", "ta") as file:
+        #     file.write(f"# {job_id}\n")
+        #     file.write(command_str)
+        #     file.write("\n")
+
+        # mrich.success(stdout)
 
     ### CONFIG
 

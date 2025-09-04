@@ -120,11 +120,12 @@ def configure(
 
 @app.command()
 def requeue(
-    job_id: int,
+    job_id: list[int],
 ):
-    """Requeue a bulkdock placement job with given ID"""
+    """Requeue a bulkdock placement job with given ID(s)"""
 
-    engine.requeue_placement_job(job_id=job_id)
+    for i in job_id:
+        engine.requeue_placement_job(job_id=i)
 
 @app.command()
 def create_directories():
