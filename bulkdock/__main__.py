@@ -125,6 +125,8 @@ def requeue(
 ):
     """Requeue a bulkdock placement job with given ID(s)"""
 
+    import time
+
     for i in job_id:
         if stagger and i > 0:
             with mrich.clock("Staggering job submission..."):
