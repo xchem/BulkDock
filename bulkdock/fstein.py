@@ -192,16 +192,24 @@ def setup_wictor_laboratory(
 def create_fragmenstein_queries_df(
     *, smiles: str, inchikey: str, reference: "Pose", inspirations: "list[Pose]", name_suffix: str | None = None,
 ):
+
+    name = [
+        inchikey,
+        f"P{reference.id}",
+    ]
+
+    for inspiration in inspirations:
+        name.append(f"P{inspiration.id}")
     
     if name_suffix:
-        name = f"{inchikey}-{reference}"
-    else:
-        name = f"{inchikey}-{reference}-{name_suffix}"
+        name.append(name_suffix)
+
+    name = "-".join(name)
 
     return DataFrame(
         [
             {
-                "name": f"{inchikey}-{reference}",
+                "name": name,
                 "smiles": smiles,
                 "hits": [pose.mol for pose in inspirations],
             }
