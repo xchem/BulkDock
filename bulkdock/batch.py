@@ -86,76 +86,73 @@ def combine(
             f"Did not find any files in {engine.output_dir}/{pattern}"
         )
 
-    if len(files) == 1:
-        mrich.var("files", files)
-        mrich.warning("Only one matching output, not doing anything")
-        return
+    if len(files) > 1:
 
-    df = []
-    for i,file in enumerate(files):
+        df = []
+        for i,file in enumerate(files):
 
-        d = dict(key=key, file=file)
+            d = dict(key=key, file=file)
 
-        file_name = file.name
+            file_name = file.name
 
-        detail = file_name.removeprefix(key).removesuffix(".sdf")
+            detail = file_name.removeprefix(key).removesuffix(".sdf")
 
-        fields = [s for s in detail.split("_") if s]
+            fields = [s for s in detail.split("_") if s]
 
-        if not len(fields) == 3:
-            mrich.warning(f"Ignoring {file_name=}")
-            continue
+            if not len(fields) == 3:
+                mrich.warning(f"Ignoring {file_name=}")
+                continue
 
-        d["batch_size"] = int(fields[0].removeprefix("split"))
-        d["batch_index"] = int(fields[1].removeprefix("batch"))
-        d["job_id"] = int(fields[2])
+            d["batch_size"] = int(fields[0].removeprefix("split"))
+            d["batch_index"] = int(fields[1].removeprefix("batch"))
+            d["job_id"] = int(fields[2])
 
-        df.append(d)
+            df.append(d)
 
-    df = DataFrame(df)
+        df = DataFrame(df)
 
-    df = df.sort_values(by="batch_index")
+        df = df.sort_values(by="batch_index")
 
-    mrich.print(df.drop(columns=["file"]))
+        mrich.print(df.drop(columns=["file"]))
 
-    if batch_size:
-        df = df[df["batch_size"]==batch_size]
+        if batch_size:
+            df = df[df["batch_size"]==batch_size]
 
-    batch_sizes = df["batch_size"].to_numpy()
-    if not (batch_sizes[0] == batch_sizes).all():
-        raise NotImplementedError("Not currently supporting multiple batch sizes. Re-run with batch-size option")
+        batch_sizes = df["batch_size"].to_numpy()
+        if not (batch_sizes[0] == batch_sizes).all():
+            raise NotImplementedError("Not currently supporting multiple batch sizes. Re-run with batch-size option")
 
-    files = []
+        files = []
 
-    batch_size = batch_sizes[0]
+        batch_size = batch_sizes[0]
 
-    mrich.var("batch_size", batch_size)
+        mrich.var("batch_size", batch_size)
 
-    expected_batch_count = ceil(num_compounds / batch_size)
+        expected_batch_count = ceil(num_compounds / batch_size)
 
-    mrich.var("expected_batch_count", expected_batch_count)
+        mrich.var("expected_batch_count", expected_batch_count)
 
-    if len(df) > expected_batch_count:
-        mrich.warning("Too many batches")
+        if len(df) > expected_batch_count:
+            mrich.warning("Too many batches")
 
-    elif len(df) < expected_batch_count:
-        mrich.warning("Missing batches")
+        elif len(df) < expected_batch_count:
+            mrich.warning("Missing batches")
 
-    for i in range(expected_batch_count):
+        for i in range(expected_batch_count):
 
-        subdf = df[df["batch_index"] == i]
+            subdf = df[df["batch_index"] == i]
 
-        if len(subdf) == 0:
-            mrich.error(f"Missing batch {i}")
-            continue
+            if len(subdf) == 0:
+                mrich.error(f"Missing batch {i}")
+                continue
 
-        elif len(subdf) > 1:
-            mrich.warning(f"Multiple batches w/ {i=}: {subdf}")
-            row = subdf.iloc[0]
-        else:
-            row = subdf.iloc[0]
+            elif len(subdf) > 1:
+                mrich.warning(f"Multiple batches w/ {i=}: {subdf}")
+                row = subdf.iloc[0]
+            else:
+                row = subdf.iloc[0]
 
-        files.append(row["file"])
+            files.append(row["file"])
 
     mrich.var("files", files)
     
