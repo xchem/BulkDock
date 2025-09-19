@@ -43,7 +43,7 @@ def combine(
         typer.Option(
             help="Select one of multiple batch sizes"
         ),
-    ] = "",
+    ] = 0,
 ):
     """Combine split SDF outputs from placement jobs"""
 
@@ -56,6 +56,8 @@ def combine(
 
     mrich.h3("bulkdock.batch.combine")
     mrich.var("csv_file", csv_file)
+
+    batch_size = batch_size or None
 
     csv_path = engine.get_infile_path(csv_file)
     mrich.var("csv_path", csv_path)
@@ -87,7 +89,7 @@ def combine(
     if len(files) > 1:
 
         df = []
-        for file in files:
+        for i,file in enumerate(files):
 
             d = dict(key=key, file=file)
 
@@ -156,7 +158,9 @@ def combine(
     
     animal = engine.get_animal(target)
 
-    for file in files:
+    for i,file in enumerate(files):
+
+        mrich.h1(f"{i}/{len(files)}")
 
         mrich.bold(file)
         try:
