@@ -29,6 +29,7 @@ def fragmenstein_place(
     write_hit_mols: bool = True,
     metadata: dict | None = None,
     cleanup: bool = True,
+    name_suffix: str | None = None,
 ) -> "Pose | bool":
 
     metadata = metadata or {}
@@ -40,7 +41,7 @@ def fragmenstein_place(
 
     # create inputs
     queries = create_fragmenstein_queries_df(
-        smiles=smiles, inchikey=inchikey, reference=reference, inspirations=inspirations
+        smiles=smiles, inchikey=inchikey, reference=reference, inspirations=inspirations, name_suffix=name_suffix,
     )
 
     orig_smiles = smiles
@@ -189,8 +190,13 @@ def setup_wictor_laboratory(
 
 
 def create_fragmenstein_queries_df(
-    *, smiles: str, inchikey: str, reference: "Pose", inspirations: "list[Pose]"
+    *, smiles: str, inchikey: str, reference: "Pose", inspirations: "list[Pose]", name_suffix: str | None = None,
 ):
+    
+    if name_suffix:
+        name = f"{inchikey}-{reference}"
+    else:
+        name = f"{inchikey}-{reference}-{name_suffix}"
 
     return DataFrame(
         [

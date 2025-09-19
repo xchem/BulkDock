@@ -448,6 +448,7 @@ class BulkDock:
                 protein_path=protein_path,
                 metadata=metadata,
                 writer=writer,
+                name_suffix=SLURM_JOB_ID,
             )
 
             if result:
