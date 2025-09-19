@@ -44,6 +44,7 @@ def combine(
             help="Select one of multiple batch sizes"
         ),
     ] = 0,
+    skip_names: bool = False,
 ):
     """Combine split SDF outputs from placement jobs"""
 
@@ -171,6 +172,7 @@ def combine(
                 reference_col="reference_id",
                 compound_tags = [key],
                 pose_tags = ["fragmenstein_placed", key],
+                skip_names = False,
             )
         except AssertionError:
             mrich.error("Something wrong with", file)
