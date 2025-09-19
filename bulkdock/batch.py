@@ -172,7 +172,7 @@ def combine(
                 reference_col="reference_id",
                 compound_tags = [key],
                 pose_tags = ["fragmenstein_placed", key],
-                skip_names = False,
+                name_col = None if skip_names else "ID",
             )
         except AssertionError:
             mrich.error("Something wrong with", file)
