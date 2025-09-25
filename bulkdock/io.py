@@ -78,42 +78,65 @@ def parse_input_csv(
 
     for i, row in df.iterrows():
 
-        # extract row values
-        smiles = row.smiles
-        inchikey = inchikey_from_smiles(smiles)
-        inspirations = row.values[1:]
+        try:
+            # extract row values
+            smiles = row.smiles
+            inchikey = inchikey_from_smiles(smiles)
+            inspirations = row.values[1:]
 
-        # debug output
-        if debug:
-            mrich.debug("i", i)
-            mrich.debug("smiles", smiles)
+            # debug output
+            if debug:
+                mrich.debug("i", i)
+                mrich.debug("smiles", smiles)
 
-        inspirations = [i for i in inspirations if isinstance(i, str) and i]
+            inspirations = [i for i in inspirations if isinstance(i, str) and i]
 
-        inspiration_poses = list()
-        for alias in inspirations:
-            pose_id = alias_lookup.get(alias, None)
-            if not pose_id:
-                mrich.error(f"Could not find inspiration with {alias=}")
+            inspiration_poses = list()
+            for alias in inspirations:
+                pose_id = alias_lookup.get(alias, None)
+                if not pose_id:
+                    mrich.error(f"Could not find inspiration with {alias=}")
+                    continue
+                pose = pose_lookup[pose_id]
+                inspiration_poses.append(pose)
+
+            if not inspiration_poses:
+                mrich.error(f"No inspirations. {i=}, {smiles=}")
                 continue
-            pose = pose_lookup[pose_id]
-            inspiration_poses.append(pose)
 
-        if not inspiration_poses:
-            mrich.error(f"No inspirations. {i=}, {smiles=}")
-            continue
+            if not reference:
 
-        if not reference:
+                # one placement against each inspiration's protein conformation
+                for pose in inspiration_poses:
 
-            # one placement against each inspiration's protein conformation
-            for pose in inspiration_poses:
+                    # all info needed for placement
+                    data.append(
+                        dict(
+                            smiles=smiles,
+                            inchikey=inchikey,
+                            reference=pose,
+                            inspirations=inspiration_poses,
+                        )
+                    )
+
+                    # debug output
+                    if debug:
+                        mrich.h3("Placement")
+                        mrich.var("smiles", smiles)
+                        mrich.var("inchikey", inchikey)
+                        mrich.var("protein", pose.alias)
+                        mrich.var("inspirations", [p.alias for p in inspiration_poses])
+
+            else:
+
+                reference_pose = animal.poses[reference]
 
                 # all info needed for placement
                 data.append(
                     dict(
                         smiles=smiles,
                         inchikey=inchikey,
-                        reference=pose,
+                        reference=reference_pose,
                         inspirations=inspiration_poses,
                     )
                 )
@@ -125,28 +148,10 @@ def parse_input_csv(
                     mrich.var("inchikey", inchikey)
                     mrich.var("protein", pose.alias)
                     mrich.var("inspirations", [p.alias for p in inspiration_poses])
-
-        else:
-
-            reference_pose = animal.poses[reference]
-
-            # all info needed for placement
-            data.append(
-                dict(
-                    smiles=smiles,
-                    inchikey=inchikey,
-                    reference=reference_pose,
-                    inspirations=inspiration_poses,
-                )
-            )
-
-            # debug output
-            if debug:
-                mrich.h3("Placement")
-                mrich.var("smiles", smiles)
-                mrich.var("inchikey", inchikey)
-                mrich.var("protein", pose.alias)
-                mrich.var("inspirations", [p.alias for p in inspiration_poses])
+        except Exception as e:
+            mrich.error("Could not parse row", e)
+            print(row)
+            continue
 
     return data
 
