@@ -128,7 +128,9 @@ class BulkDock:
             )
             return None
 
-        animal = hippo.HIPPO(f"{target}_bulkdock", animal_path, update_legacy=update_legacy)
+        animal = hippo.HIPPO(
+            f"{target}_bulkdock", animal_path, update_legacy=update_legacy
+        )
 
         return animal
 
@@ -276,10 +278,10 @@ class BulkDock:
                 mrich.print(x.stderr)
                 raise Exception(
                     f"Could not submit slurm job with command: {' '.join(commands)}"
-                )            
+                )
 
             job_id = int(x.stdout.decode().strip().split()[-1])
-            
+
             with open("sbatch.log", "ta") as file:
                 file.write(f"# {job_id}\n")
                 file.write(" ".join(commands))
