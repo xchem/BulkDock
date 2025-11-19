@@ -48,6 +48,9 @@ def export(
     if posebusters:
         pose_filter_methods.append("posebusters")
 
+    if require_outcome in ["None", "False"]:
+        require_outcome = None
+
     engine.export(
         target=target,
         tag=tag,
