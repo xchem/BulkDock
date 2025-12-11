@@ -8,9 +8,9 @@ from datetime import timedelta
 from richqueue.tools import human_timedelta  # , human_timedelta_to_seconds
 
 
-def status():
+def status(user: str = None):
 
-    user = get_user()
+    user = user or get_user()
 
     df = combined_df(user=user)
 

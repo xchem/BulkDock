@@ -14,12 +14,14 @@ engine = BulkDock()
 
 
 @app.command()
-def status():
+def status(
+    user: str = None,
+):
     """Show the status of running BulkDock jobs"""
 
     from .status import status
 
-    status()
+    status(user=user)
 
 
 @app.command()
