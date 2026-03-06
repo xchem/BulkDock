@@ -1,12 +1,13 @@
 # BulkDock
-💪 BulkDock: Manage batches of Fragmenstein restrained protein-ligand docking jobs 
+💪 BulkDock: Manage batches of Fragmenstein restrained protein-ligand docking jobs
 
 ## Usage
 
-Clone the repo on IRIS and change to directory:
+Clone the repo on IRIS and change to directory, picking a suitable release.
+Here we clone release 1.0.0 of the repository: -
 
-```
-git clone git@github.com:mwinokan/BulkDock
+```bash
+git clone --depth 1 --branch 1.0.0 git@github.com:xchem/BulkDock
 cd BulkDock
 ```
 
