@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xchem-bulkdock"
+description = "Manage batches of Fragmenstein restrained protein-ligand docking jobs"
+readme = "README.md"
+requires-python = ">= 3.10"
+dependencies = [
+  "mrich >= 1.0, < 2",
+  "rdkit == 2025.9.6",
+  "pandas >= 2.3.3, < 3",
+  "rich >= 14.3.3, < 15",
+  "richqueue >= 1.11.2, < 2",
+  "typer == 0.24.1",
+  "xchem-fragmenstein >= 1.0.0, < 2",
+]
+dynamic = ["version"]
+
+[project.scripts]
+bulkdock = "bulkdock.main:app"
+
+[project.urls]
+Repository = "https://github.com/xchem/bulkdock.git"
