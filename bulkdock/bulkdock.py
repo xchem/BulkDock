@@ -436,8 +436,22 @@ class BulkDock:
 
             # get protein file path
             protein_path = reference.path.replace("_hippo.pdb", ".pdb").replace(
-                ".pdb", "_apo-desolv.pdb"
+                ".pdb", "_delig-desolv.pdb"
             )
+            if not protein_path.exists():
+                protein_path = reference.path.replace("_hippo.pdb", ".pdb").replace(
+                    ".pdb", "_apo-desolv.pdb"
+                )
+                if protein_path.exists():
+                    mrich.warning(
+                        f'Could not find "delig-desolv.pdb" for {self}, using "apo-desolv.pdb" instead '
+                        f'(which is deprecated in new versions of fragalysis downloads)'
+                    )
+                else:
+                    mrich.error(
+                        f'Could not find reference protein path: {protein_path}'
+                    )
+
             mrich.var("protein_path", protein_path)
 
             result = fragmenstein_place(
