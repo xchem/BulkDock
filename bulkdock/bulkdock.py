@@ -438,11 +438,11 @@ class BulkDock:
             protein_path = reference.path.replace("_hippo.pdb", ".pdb").replace(
                 ".pdb", "_delig-desolv.pdb"
             )
-            if not protein_path.exists():
+            if not os.path.exists(protein_path):
                 protein_path = reference.path.replace("_hippo.pdb", ".pdb").replace(
                     ".pdb", "_apo-desolv.pdb"
                 )
-                if protein_path.exists():
+                if os.path.exists(protein_path):
                     mrich.warning(
                         f'Could not find "delig-desolv.pdb" for {self}, using "apo-desolv.pdb" instead '
                         f'(which is deprecated in new versions of fragalysis downloads)'
