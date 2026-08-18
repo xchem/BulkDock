@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bulkdock"
+version = "1.0.0"
+description = "Manage batches of Fragmenstein restrained protein-ligand docking jobs"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Max Winokan", email = "max@winokan.com"},
+]
+requires-python = ">=3.8"
+dependencies = [
+    "mrich",
+    "typer",
+    "typing_extensions",
+    "rdkit",
+    "fragmenstein",
+    "pandas",
+    "rich",
+    "richqueue",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/xchem/BulkDock"
+Repository = "https://github.com/xchem/BulkDock.git"
+Issues = "https://github.com/xchem/BulkDock/issues"
+
+[project.scripts]
+bulkdock = "bulkdock.__main__:main"
+
+[tool.setuptools]
+packages = ["bulkdock"]
+
+[tool.setuptools.package-data]
+bulkdock = ["*.py"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
